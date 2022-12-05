@@ -6,19 +6,19 @@ export function createComponentPlugin():PluginOption {
   let root = process.cwd()
   const dirs = 'src/components'
   const componentsMap = {}
-  function findComponents(glob:(string)[]){
-    const paths = fg.sync(glob, { cwd: root })
+  function findComponents(){
+    const paths = fg.sync(resolveGlob(), { cwd: root })
     console.log(paths)
   }
-  function resolveGlob() {
-
+  function resolveGlob():(string)[] {
+    return [dirs + '/**/*.vue']
   }
 
   return {
     name: 'component-plugin',
     configResolved(config: ResolvedConfig) {
       root = config.root
-      findComponents([dirs])
+      findComponents()
       console.log('---', root)
     },
     transform: (code, id) => {
