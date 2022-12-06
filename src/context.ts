@@ -78,6 +78,7 @@ export class Context {
   }
   setRoot(root: string) {
     this.root = root
+    this.options = this.resolveOptions(this.rawOptions, this.root)
   }
   resolveOptions(rawOptions: Options, root):ResolveOptions{
     const resolveOptions = Object.assign({}, defaultOptions, rawOptions) as resolveOptions
@@ -103,6 +104,9 @@ export class Context {
     toArray(paths).forEach(item => this._componentPaths.add(item))
     Array.from(this._componentPaths).forEach((path) => {
       const name = getNameFromFilePath(path, this.options)
+      this._componentNames[name] = {
+        from: path
+      }
     })
   }
 }
