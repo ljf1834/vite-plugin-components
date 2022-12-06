@@ -1,25 +1,15 @@
 import { type PluginOption, type ResolvedConfig } from 'vite'
 import { resolve } from 'node:path'
-import fg from 'fast-glob'
+import { Context } from "./context";
 
 export function createComponentPlugin():PluginOption {
-  let root = process.cwd()
-  const dirs = 'src/components'
-  const componentsMap = {}
-  function findComponents(){
-    const paths = fg.sync(resolveGlob(), { cwd: root })
-    console.log(paths)
-  }
-  function resolveGlob():(string)[] {
-    return [dirs + '/**/*.vue']
-  }
+  const ctx = new Context({})
 
   return {
-    name: 'component-plugin',
+    name: 'components-plugin',
+    enforce: 'post',
     configResolved(config: ResolvedConfig) {
-      root = config.root
-      findComponents()
-      console.log('---', root)
+      ctx.setRoot(config.root)
     },
     transform: (code, id) => {
 
