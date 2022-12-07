@@ -2,7 +2,6 @@ import { toArray, slash, getNameFromFilePath, pascalCase } from "./utils"
 import { resolve } from "node:path"
 import fg from 'fast-glob'
 
-
 interface Options {
   /**
    * Relative paths to the directory to search for components.
@@ -63,6 +62,7 @@ export type ResolveOptions = Omit<Options, 'extensions' | 'dirs'>  & {
 const defaultOptions = {
   dirs: 'src/components',
   extensions: 'vue',
+  deep: true
 }
 
 export class Context {
@@ -71,7 +71,7 @@ export class Context {
   options: ResolveOptions
   private _globs:string[] = []
   private _componentPaths: Set<string> = new Set()
-  private _componentNames = {}
+  private _componentNamesMap = {}
   constructor(private rawOptions: Options) {
     this.options = this.resolveOptions(rawOptions, this.root)
     this._globs = this.resolveGlobs(this.options.resolvedDirs)
@@ -79,36 +79,39 @@ export class Context {
   setRoot(root: string) {
     this.root = root
     this.options = this.resolveOptions(this.rawOptions, this.root)
+    this._globs = this.resolveGlobs(this.options.dirs)
   }
   resolveOptions(rawOptions: Options, root):ResolveOptions{
-    const resolveOptions = Object.assign({}, defaultOptions, rawOptions) as resolveOptions
-    resolveOptions.extensions = toArray(this.options.extensions)
-    resolveOptions.dirs = toArray(this.options.dirs)
+    const resolveOptions = Object.assign({}, defaultOptions, rawOptions) as ResolveOptions
+    resolveOptions.extensions = toArray(resolveOptions.extensions)
+    resolveOptions.dirs = toArray(resolveOptions.dirs)
     resolveOptions.resolvedDirs = resolveOptions.dirs.map(u => slash(resolve(root, u)))
     resolveOptions.root = root
     return resolveOptions
   }
   resolveGlobs(dirs:string[]) {
-    let globs
     if (this.options.globs) {
-      globs = toArray(this.options.globs).map((glob: string) => slash(resolve(this.options.root, glob)))
+      return toArray(this.options.globs).map((glob: string) => slash(resolve(this.options.root, glob)))
     } else {
       const extsGlob = `{${(this.options.extensions as string[]).join(',')}}`
-      globs = dirs.map((dir: string) => this.options.deep ? slash(`${dir}**/*.${extsGlob}`) : slash(`${dir}*.${extsGlob}`))
+      return dirs.map((dir: string) => this.options.deep ? slash(`./${dir}/**/*.${extsGlob}`) : slash(`./${dir}/*.${extsGlob}`))
       if (!this.options.extensions.length) throw new Error('[components-plugin] `extensions` option is required to search for components')
     }
-    return globs
   }
   searchComponents() {
-    const paths = fg.sync(this._globs, { cwd: this.options.root })
+    const paths = fg.sync(this._globs, { cwd: this.options.root, ignore: ['node_modules'], onlyFiles: true, absolute: true})
+    console.log(paths)
     toArray(paths).forEach(item => this._componentPaths.add(item))
     Array.from(this._componentPaths).forEach((path) => {
       const name = pascalCase(getNameFromFilePath(path, this.options))
-      this._componentNames[name] = {
+      this._componentNamesMap[name] = {
         as: name,
         from: path
       }
     })
-    console.log('-------------------------', this._componentNames)
+  }
+
+  get componentNameMap() {
+    return this._componentNamesMap
   }
 }
