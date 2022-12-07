@@ -1,4 +1,4 @@
-import { toArray, slash, getNameFromFilePath } from "./utils"
+import { toArray, slash, getNameFromFilePath, pascalCase } from "./utils"
 import { resolve } from "node:path"
 import fg from 'fast-glob'
 
@@ -67,7 +67,7 @@ const defaultOptions = {
 
 export class Context {
   root = process.cwd()
-  alias: Record<string, string> = {}
+  alias: Record<string, string>
   options: ResolveOptions
   private _globs:string[] = []
   private _componentPaths: Set<string> = new Set()
@@ -99,14 +99,16 @@ export class Context {
     }
     return globs
   }
-  findComponents() {
+  searchComponents() {
     const paths = fg.sync(this._globs, { cwd: this.options.root })
     toArray(paths).forEach(item => this._componentPaths.add(item))
     Array.from(this._componentPaths).forEach((path) => {
-      const name = getNameFromFilePath(path, this.options)
+      const name = pascalCase(getNameFromFilePath(path, this.options))
       this._componentNames[name] = {
+        as: name,
         from: path
       }
     })
+    console.log('-------------------------', this._componentNames)
   }
 }

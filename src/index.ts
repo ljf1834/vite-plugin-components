@@ -1,6 +1,6 @@
 import { type PluginOption, type ResolvedConfig } from 'vite'
 import { resolve } from 'node:path'
-import { Context } from "./context";
+import { Context } from "./context"
 
 export function createComponentPlugin():PluginOption {
   const ctx = new Context({})
@@ -10,9 +10,7 @@ export function createComponentPlugin():PluginOption {
     enforce: 'post',
     configResolved(config: ResolvedConfig) {
       ctx.setRoot(config.root)
-    },
-    transform: (code, id) => {
-
+      ctx.searchComponents()
     }
   }
 }
