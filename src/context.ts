@@ -1,5 +1,5 @@
-import {toArray, slash, getNameFromFilePath, pascalCase, parseId, stringifyComponentImport} from "./utils"
-import { resolve } from "node:path"
+import {getNameFromFilePath, parseId, pascalCase, slash, stringifyComponentImport, toArray} from "./utils"
+import {resolve} from "node:path"
 import fg from 'fast-glob'
 import MagicString from 'magic-string'
 
@@ -122,8 +122,7 @@ export class Context {
   }
 
   findComponent(name) {
-    let info = this._componentNamesMap[name]
-    return info
+    return this._componentNamesMap[name]
   }
 
   transform(code: string, id: string) {
