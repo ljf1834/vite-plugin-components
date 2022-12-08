@@ -11,6 +11,9 @@ export function createComponentPlugin():PluginOption {
     configResolved(config: ResolvedConfig) {
       ctx.setRoot(config.root)
       ctx.searchComponents()
+    },
+    transform(code: string, id: string) {
+      return ctx.transform(code, id)
     }
   }
 }

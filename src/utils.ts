@@ -1,6 +1,6 @@
 import fg from "fast-glob";
 import { parse } from 'path'
-import { type ResolveOptions } from "./context"
+import { type ResolveOptions, type Options } from "./context"
 
 type Nullable<T> = T | null | undefined
 type Arrayable<T> = T | Array<T>
@@ -87,4 +87,51 @@ export function kebabCase(key: string) {
 
 export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+export function parseId(id: string) {
+  const index = id.indexOf('?')
+  if (index < 0) {
+    return { path: id, query: {} }
+  }
+  else {
+    const query = Object.fromEntries(new URLSearchParams(id.slice(index)) as any)
+    return {
+      path: id.slice(0, index),
+      query,
+    }
+  }
+}
+
+export function stringifyComponentImport({ as: name, from: path, name: importName, sideEffects }, ctx) {
+  path = getTransformedPath(path, ctx.options.importPathTransform)
+
+  const imports = [
+    stringifyImport({ as: name, from: path, name: importName }),
+  ]
+
+  if (sideEffects)
+    toArray(sideEffects).forEach(i => imports.push(stringifyImport(i)))
+
+  return imports.join(';')
+}
+
+export function getTransformedPath(path: string, importPathTransform?: Options['importPathTransform']): string {
+  if (importPathTransform) {
+    const result = importPathTransform(path)
+    if (result != null)
+      path = result
+  }
+  return path
+}
+
+export function stringifyImport(info) {
+  if (typeof info === 'string')
+    return `import '${info}'`
+  if (!info.as)
+    return `import '${info.from}'`
+  else if (info.name)
+    return `import { ${info.name} as ${info.as} } from '${info.from}'`
+  else
+    return `import ${info.as} from '${info.from}'`
 }

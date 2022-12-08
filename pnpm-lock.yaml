@@ -8,6 +8,7 @@ importers:
       chokidar: ^3.5.3
       esno: ^0.16.3
       fast-glob: ^3.2.12
+      magic-string: ^0.27.0
       rollup: ^3.4.0
       tsup: ^6.5.0
       typescript: ^4.9.3
@@ -17,6 +18,7 @@ importers:
     dependencies:
       chokidar: 3.5.3
       fast-glob: 3.2.12
+      magic-string: 0.27.0
     devDependencies:
       '@types/node': 18.11.10
       esno: 0.16.3
@@ -27,7 +29,7 @@ importers:
       vitest: 0.25.5
       vue: 3.2.37
 
-  examples/my-vue-app:
+  examples/vue3:
     specifiers:
       '@vitejs/plugin-vue': ^3.2.0
       components-plugin: workspace:*
@@ -115,6 +117,10 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@jridgewell/sourcemap-codec/1.4.14:
+    resolution: {integrity: sha512-XPSJHWmi394fuUuzDnGz1wiKqWfo1yXecHQMRf2l6hztTO+nPru658AyDngaBe7isIxEkRsPR3FZh+s7iVa4Uw==}
+    dev: false
 
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -987,6 +993,13 @@ packages:
     dependencies:
       sourcemap-codec: 1.4.8
     dev: true
+
+  /magic-string/0.27.0:
+    resolution: {integrity: sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.4.14
+    dev: false
 
   /merge-stream/2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}

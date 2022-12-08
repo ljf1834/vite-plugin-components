@@ -1,8 +1,9 @@
-import { toArray, slash, getNameFromFilePath, pascalCase } from "./utils"
+import {toArray, slash, getNameFromFilePath, pascalCase, parseId, stringifyComponentImport} from "./utils"
 import { resolve } from "node:path"
 import fg from 'fast-glob'
+import MagicString from 'magic-string'
 
-interface Options {
+export interface Options {
   /**
    * Relative paths to the directory to search for components.
    * @default 'src/components'
@@ -50,6 +51,11 @@ interface Options {
    * @default false
    */
   directoryAsNamespace?: boolean
+
+  /**
+   * Apply custom transform over the path for importing
+   */
+  importPathTransform?: (path: string) => string | undefined
 }
 export type ResolveOptions = Omit<Options, 'extensions' | 'dirs'>  & {
   extensions: string[]
@@ -59,10 +65,15 @@ export type ResolveOptions = Omit<Options, 'extensions' | 'dirs'>  & {
   root: string
   globs: string[]
 }
+interface ResolveResult {
+  rawName: string
+  replace: (resolved: string) => void
+}
 const defaultOptions = {
   dirs: 'src/components',
   extensions: 'vue',
-  deep: true
+  deep: true,
+  importPathTransform: v => v
 }
 
 export class Context {
@@ -108,6 +119,43 @@ export class Context {
         from: path
       }
     })
+  }
+
+  findComponent(name) {
+    let info = this._componentNamesMap[name]
+    return info
+  }
+
+  transform(code: string, id: string) {
+    let no = 0
+    const { path, query } = parseId(id)
+    const s = new MagicString(code)
+    const results: ResolveResult[] = []
+    for (const match of code.matchAll(/_resolveComponent[0-9]*\("(.+?)"\)/g)) {
+      const matchedName = match[1]
+      if (match.index != null && matchedName && !matchedName.startsWith('_')) {
+        const start = match.index
+        const end = start + match[0].length
+        results.push({
+          rawName: matchedName,
+          replace: resolved => s.overwrite(start, end, resolved),
+        })
+      }
+    }
+    for (const { rawName, replace } of results) {
+      const name = pascalCase(rawName)
+      const component = this.findComponent(name)
+      if (component) {
+        const varName = `components_${no}`
+        s.prepend(`${stringifyComponentImport({ ...component, as: varName }, this)};\n`)
+        no += 1
+        replace(varName)
+      }
+    }
+    return {
+      code: s.toString(),
+      map: s.generateMap({ source: id, includeContent: true })
+    }
   }
 
   get componentNameMap() {
