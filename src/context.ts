@@ -93,14 +93,13 @@ export class Context {
     if (this.options.globs) {
       return toArray(this.options.globs).map((glob: string) => slash(resolve(this.options.root, glob)))
     } else {
-      const extsGlob = `{${(this.options.extensions as string[]).join(',')}}`
+      const extsGlob = this.options.extensions.length==1 ? this.options.extensions[0] : `{${(this.options.extensions as string[]).join(',')}}`
       return dirs.map((dir: string) => this.options.deep ? slash(`./${dir}/**/*.${extsGlob}`) : slash(`./${dir}/*.${extsGlob}`))
       if (!this.options.extensions.length) throw new Error('[components-plugin] `extensions` option is required to search for components')
     }
   }
   searchComponents() {
     const paths = fg.sync(this._globs, { cwd: this.options.root, ignore: ['node_modules'], onlyFiles: true, absolute: true})
-    console.log(paths)
     toArray(paths).forEach(item => this._componentPaths.add(item))
     Array.from(this._componentPaths).forEach((path) => {
       const name = pascalCase(getNameFromFilePath(path, this.options))
