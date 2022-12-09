@@ -24,7 +24,8 @@
 	"dependencies": {
 		"chokidar": "^3.5.3",
 		"fast-glob": "^3.2.12",
-		"magic-string": "^0.27.0"
+		"magic-string": "^0.27.0",
+		"minimatch": "^5.1.1"
 	},
 	"devDependencies": {
 		"@types/node": "^18.11.9",

@@ -1,7 +1,8 @@
-import {getNameFromFilePath, parseId, pascalCase, slash, stringifyComponentImport, toArray} from "./utils"
+import {getNameFromFilePath, parseId, pascalCase, slash, stringifyComponentImport, toArray, matchGlobs} from "./utils"
 import {resolve} from "node:path"
 import fg from 'fast-glob'
 import MagicString from 'magic-string'
+import { ViteDevServer } from "vite"
 
 export interface Options {
   /**
@@ -89,8 +90,17 @@ export class Context {
   }
   setRoot(root: string) {
     this.root = root
-    this.options = this.resolveOptions(this.rawOptions, this.root)
-    this._globs = this.resolveGlobs(this.options.dirs)
+    Context.prototype.constructor.call(this, this.rawOptions)
+    // this.options = this.resolveOptions(this.rawOptions, this.root)
+    // this._globs = this.resolveGlobs(this.options.dirs)
+  }
+  private server:ViteDevServer | undefined
+  setServer(server: ViteDevServer) {
+    this.server = server
+    this.server.watcher.on('add', (filePath) => {
+      if (!matchGlobs(filePath, this._globs)) return
+      this.searchComponents()
+    })
   }
   resolveOptions(rawOptions: Options, root):ResolveOptions{
     const resolveOptions = Object.assign({}, defaultOptions, rawOptions) as ResolveOptions
@@ -120,11 +130,9 @@ export class Context {
       }
     })
   }
-
   findComponent(name) {
     return this._componentNamesMap[name]
   }
-
   transform(code: string, id: string) {
     let no = 0
     const { path, query } = parseId(id)
@@ -156,7 +164,6 @@ export class Context {
       map: s.generateMap({ source: id, includeContent: true })
     }
   }
-
   get componentNameMap() {
     return this._componentNamesMap
   }

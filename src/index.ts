@@ -12,6 +12,9 @@ export function createComponentPlugin():PluginOption {
       ctx.setRoot(config.root)
       ctx.searchComponents()
     },
+    configureServer(server) {
+      ctx.setServer(server)
+    },
     transform(code: string, id: string) {
       return ctx.transform(code, id)
     }

@@ -1,6 +1,7 @@
 import fg from "fast-glob";
 import { parse } from 'path'
-import { type ResolveOptions, type Options } from "./context"
+import minimatch from 'minimatch'
+import type { ResolveOptions, Options } from "./context"
 
 type Nullable<T> = T | null | undefined
 type Arrayable<T> = T | Array<T>
@@ -134,4 +135,12 @@ export function stringifyImport(info) {
     return `import { ${info.name} as ${info.as} } from '${info.from}'`
   else
     return `import ${info.as} from '${info.from}'`
+}
+
+export function matchGlobs(filepath: string, globs: string[]) {
+  for (const glob of globs) {
+    if (minimatch(slash(filepath), glob))
+      return true
+  }
+  return false
 }
