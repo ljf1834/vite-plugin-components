@@ -3,6 +3,7 @@ import {resolve} from "node:path"
 import fg from 'fast-glob'
 import MagicString from 'magic-string'
 import { ViteDevServer } from "vite"
+import {fileURLToPath, pathToFileURL, URL} from "node:url"
 
 export interface Options {
   /**
@@ -84,22 +85,22 @@ export class Context {
   private _globs:string[] = []
   private _componentPaths: Set<string> = new Set()
   private _componentNamesMap = {}
-  constructor(private rawOptions: Options) {
+  constructor(private rawOptions: Options = {}) {
     this.options = this.resolveOptions(rawOptions, this.root)
     this._globs = this.resolveGlobs(this.options.resolvedDirs)
   }
   setRoot(root: string) {
     this.root = root
-    Context.prototype.constructor.call(this, this.rawOptions)
-    // this.options = this.resolveOptions(this.rawOptions, this.root)
-    // this._globs = this.resolveGlobs(this.options.dirs)
+    this.options = this.resolveOptions(this.rawOptions, this.root)
+    this._globs = this.resolveGlobs(this.options.dirs)
   }
   private server:ViteDevServer | undefined
   setServer(server: ViteDevServer) {
     this.server = server
     this.server.watcher.on('add', (filePath) => {
-      if (!matchGlobs(filePath, this._globs)) return
+      if (!matchGlobs(filePath, this.options.dirs.map(path => fileURLToPath(new URL(path, pathToFileURL(this.root).toString() + '/').href)))) return
       this.searchComponents()
+      console.log(this._componentNamesMap)
     })
   }
   resolveOptions(rawOptions: Options, root):ResolveOptions{
@@ -166,5 +167,8 @@ export class Context {
   }
   get componentNameMap() {
     return this._componentNamesMap
+  }
+  get globs() {
+    return this._globs
   }
 }

@@ -138,9 +138,12 @@ export function stringifyImport(info) {
 }
 
 export function matchGlobs(filepath: string, globs: string[]) {
+  filepath = slash(filepath)
   for (const glob of globs) {
-    if (minimatch(slash(filepath), glob))
+    const normalizationGlob = slash(glob)
+    if (filepath.match(new RegExp(normalizationGlob))) {
       return true
+    }
   }
   return false
 }
