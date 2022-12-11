@@ -100,7 +100,10 @@ export class Context {
     this.server.watcher.on('add', (filePath) => {
       if (!matchGlobs(filePath, this.options.dirs.map(path => fileURLToPath(new URL(path, pathToFileURL(this.root).toString() + '/').href)))) return
       this.searchComponents()
-      console.log(this._componentNamesMap)
+    })
+    this.server.watcher.on('unlink', (filePath) => {
+      if (!matchGlobs(filePath, this.options.dirs.map(path => fileURLToPath(new URL(path, pathToFileURL(this.root).toString() + '/').href)))) return
+      this.searchComponents()
     })
   }
   resolveOptions(rawOptions: Options, root):ResolveOptions{
