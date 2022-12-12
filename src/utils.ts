@@ -2,9 +2,15 @@ import fg from "fast-glob";
 import { parse } from 'path'
 import minimatch from 'minimatch'
 import type { ResolveOptions, Options } from "./context"
+import type MagicString from 'magic-string'
 
 type Nullable<T> = T | null | undefined
 type Arrayable<T> = T | Array<T>
+interface ResolveResult {
+  rawName: string
+  replace: (resolved: string) => void
+}
+
 
 export function toArray<T>(array?: Nullable<Arrayable<T>>): Array<T> {
   array = array ?? []
@@ -146,4 +152,36 @@ export function matchGlobs(filepath: string, globs: string[]) {
     }
   }
   return false
+}
+
+export function transformVue3(code, s: MagicString): ResolveResult[] {
+  const results: ResolveResult[] = []
+  for (const match of code.matchAll(/_resolveComponent[0-9]*\("(.+?)"\)/g)) {
+    const matchedName = match[1]
+    if (match.index != null && matchedName && !matchedName.startsWith('_')) {
+      const start = match.index
+      const end = start + match[0].length
+      results.push({
+        rawName: matchedName,
+        replace: resolved => s.overwrite(start, end, resolved),
+      })
+    }
+  }
+  return results
+}
+
+export function transformVue2(code, s: MagicString): ResolveResult[] {
+  const results: ResolveResult[] = []
+  for (const match of code.matchAll(/\b(_c|h)\([\s\n\t]*['"](.+?)["']([,)])/g)) {
+    const [full, renderFunctionName, matchedName, append] = match
+    if (match.index != null && matchedName && !matchedName.startsWith('_')) {
+      const start = match.index
+      const end = start + full.length
+      results.push({
+        rawName: matchedName,
+        replace: resolved => s.overwrite(start, end, `${renderFunctionName}(${resolved}${append}`),
+      })
+    }
+  }
+  return results
 }

@@ -1,10 +1,12 @@
-import {getNameFromFilePath, parseId, pascalCase, slash, stringifyComponentImport, toArray, matchGlobs} from "./utils"
+import {getNameFromFilePath, parseId, pascalCase, slash, stringifyComponentImport, toArray, matchGlobs, transformVue2, transformVue3} from "./utils"
 import {resolve} from "node:path"
 import fg from 'fast-glob'
 import MagicString from 'magic-string'
 import { ViteDevServer } from "vite"
 import {fileURLToPath, pathToFileURL, URL} from "node:url"
 
+
+export type SupportedTransformer = 'vue3' | 'vue2'
 export interface Options {
   /**
    * Relative paths to the directory to search for components.
@@ -58,6 +60,13 @@ export interface Options {
    * Apply custom transform over the path for importing
    */
   importPathTransform?: (path: string) => string | undefined
+
+  /**
+   * Transformer to apply
+   *
+   * @default 'vue3'
+   */
+  transformer?: SupportedTransformer
 }
 export type ResolveOptions = Omit<Options, 'extensions' | 'dirs'>  & {
   extensions: string[]
@@ -71,10 +80,11 @@ interface ResolveResult {
   rawName: string
   replace: (resolved: string) => void
 }
-const defaultOptions = {
+const defaultOptions:Options = {
   dirs: 'src/components',
   extensions: 'vue',
   deep: true,
+  transformer: 'vue3',
   importPathTransform: v => v
 }
 
@@ -135,23 +145,17 @@ export class Context {
     })
   }
   findComponent(name) {
-    return this._componentNamesMap[name]
+    return this.componentNameMap[name]
   }
   transform(code: string, id: string) {
     let no = 0
     const { path, query } = parseId(id)
     const s = new MagicString(code)
-    const results: ResolveResult[] = []
-    for (const match of code.matchAll(/_resolveComponent[0-9]*\("(.+?)"\)/g)) {
-      const matchedName = match[1]
-      if (match.index != null && matchedName && !matchedName.startsWith('_')) {
-        const start = match.index
-        const end = start + match[0].length
-        results.push({
-          rawName: matchedName,
-          replace: resolved => s.overwrite(start, end, resolved),
-        })
-      }
+    let results: ResolveResult[] = []
+    if (this.options.transformer === 'vue3') {
+      results = transformVue3(code, s)
+    } else {
+      results = transformVue2(code, s)
     }
     for (const { rawName, replace } of results) {
       const name = pascalCase(rawName)
