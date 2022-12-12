@@ -24,9 +24,8 @@
 	"engines": {
 		"node": ">=14"
 	},
-	"keywords": [],
 	"author": "ljf1834",
-	"license": "ISC",
+	"license": "MIT",
 	"dependencies": {
 		"chokidar": "^3.5.3",
 		"fast-glob": "^3.2.12",
