@@ -130,7 +130,7 @@ export class Context {
     } else {
       const extsGlob = this.options.extensions.length==1 ? this.options.extensions[0] : `{${(this.options.extensions as string[]).join(',')}}`
       return dirs.map((dir: string) => this.options.deep ? slash(`./${dir}/**/*.${extsGlob}`) : slash(`./${dir}/*.${extsGlob}`))
-      if (!this.options.extensions.length) throw new Error('[components-plugin] `extensions` option is required to search for components')
+      if (!this.options.extensions.length) throw new Error('[vite-plugin-components] `extensions` option is required to search for components')
     }
   }
   searchComponents() {
