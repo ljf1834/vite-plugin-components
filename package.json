@@ -3,21 +3,27 @@
 	"version": "1.0.0",
 	"description": "",
 	"packageManager": "pnpm@7.17.0",
-	"main": "./dist/index.js",
+	"main": "dist/index.js",
+	"module": "dist/index.mjs",
 	"scripts": {
 		"example:dev": "pnpm -C ./examples/vue3 dev",
 		"dev": "tsup --watch src",
-		"test": "vitest"
+		"test": "vitest",
+		"prepack": "echo prepack",
+		"build": "tsup"
 	},
 	"exports": {
 		".": {
 			"require": "./dist/index.js",
-			"import": "./dist/index.js"
+			"import": "./dist/index.mjs"
 		}
 	},
 	"files": [
 		"dist"
 	],
+	"engines": {
+		"node": ">=14"
+	},
 	"keywords": [],
 	"author": "ljf1834",
 	"license": "ISC",
