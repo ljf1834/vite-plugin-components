@@ -1,7 +1,7 @@
 {
-	"name": "components-plugin",
+	"name": "vite-plugin-components",
 	"version": "1.0.0",
-	"description": "",
+	"description": "Components auto importing for Vue",
 	"packageManager": "pnpm@7.17.0",
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
