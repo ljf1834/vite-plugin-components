@@ -10,7 +10,8 @@
 		"dev": "tsup --watch src",
 		"test": "vitest",
 		"prepack": "echo prepack",
-		"build": "tsup"
+		"build": "tsup",
+		"prepublishOnly": "pnpm run build"
 	},
 	"exports": {
 		".": {
