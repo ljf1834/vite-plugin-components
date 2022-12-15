@@ -1,16 +1,8 @@
 import fg from "fast-glob";
 import { parse } from 'path'
 import minimatch from 'minimatch'
-import type { ResolveOptions, Options } from "./context"
+import type { ResolveOptions, Options, Nullable, Arrayable, ResolveResult } from "./types"
 import type MagicString from 'magic-string'
-
-type Nullable<T> = T | null | undefined
-type Arrayable<T> = T | Array<T>
-interface ResolveResult {
-  rawName: string
-  replace: (resolved: string) => void
-}
-
 
 export function toArray<T>(array?: Nullable<Arrayable<T>>): Array<T> {
   array = array ?? []

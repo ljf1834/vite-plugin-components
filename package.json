@@ -10,7 +10,7 @@
 		"dev": "tsup --watch src",
 		"test": "vitest",
 		"prepack": "echo prepack",
-		"build": "tsup",
+		"build": "tsup --dts-only",
 		"prepublishOnly": "pnpm run build"
 	},
 	"exports": {

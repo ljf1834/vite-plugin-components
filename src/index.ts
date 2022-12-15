@@ -1,6 +1,7 @@
-import { type Plugin, type ResolvedConfig } from 'vite'
+import type { Plugin, ResolvedConfig } from 'vite'
 import { resolve } from 'node:path'
-import { Context, type Options  } from "./context"
+import { Context } from "./context"
+import type { Options } from "./types"
 
 export function createComponentPlugin(options?: Options):Plugin {
   const ctx = new Context(options = {})
