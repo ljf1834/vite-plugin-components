@@ -7,7 +7,7 @@ export function createComponentPlugin(options?: Options):Plugin {
   const ctx = new Context(options = {})
 
   return {
-    name: 'components-plugin',
+    name: 'vite-plugin-components',
     enforce: 'post',
     configResolved(config: ResolvedConfig) {
       ctx.setRoot(config.root)
