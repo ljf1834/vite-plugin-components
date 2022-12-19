@@ -34,10 +34,10 @@ importers:
   examples/vue3:
     specifiers:
       '@vitejs/plugin-vue': ^3.2.0
-      components-plugin: workspace:*
       typescript: ^4.6.4
       unplugin-vue-components: ^0.22.11
       vite: ^3.2.3
+      vite-plugin-components: workspace:*
       vite-plugin-inspect: ^0.7.9
       vue: ^3.2.41
       vue-tsc: ^1.0.9
@@ -45,10 +45,10 @@ importers:
       vue: 3.2.45
     devDependencies:
       '@vitejs/plugin-vue': 3.2.0_vite@3.2.4+vue@3.2.45
-      components-plugin: link:../..
       typescript: 4.9.3
       unplugin-vue-components: 0.22.11_vue@3.2.45
       vite: 3.2.4
+      vite-plugin-components: link:../..
       vite-plugin-inspect: 0.7.9_vite@3.2.4
       vue-tsc: 1.0.11_typescript@4.9.3
 

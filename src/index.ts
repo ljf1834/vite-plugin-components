@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 import { Context } from "./context"
 import type { Options } from "./types"
 
-export function createComponentPlugin(options?: Options):Plugin {
+export default function createComponentPlugin(options?: Options):Plugin {
   const ctx = new Context(options = {})
   const filter = createFilter(
     options.include || [/\.vue$/, /\.vue\?vue/, /\.vue\?v=/],

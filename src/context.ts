@@ -36,10 +36,12 @@ export class Context {
     this.server.watcher.on('add', (filePath) => {
       if (!matchGlobs(filePath, this.options.dirs.map(path => fileURLToPath(new URL(path, pathToFileURL(this.root).toString() + '/').href)))) return
       this.searchComponents()
+      this.generateDeclarant()
     })
     this.server.watcher.on('unlink', (filePath) => {
       if (!matchGlobs(filePath, this.options.dirs.map(path => fileURLToPath(new URL(path, pathToFileURL(this.root).toString() + '/').href)))) return
       this.searchComponents()
+      this.generateDeclarant()
     })
   }
   resolveOptions(rawOptions: Options, root):ResolveOptions{
@@ -97,6 +99,9 @@ export class Context {
       code: s.toString(),
       map: s.generateMap({ source: id, includeContent: true })
     }
+  }
+  generateDeclarant() {
+
   }
   get componentNameMap() {
     return this._componentNamesMap
