@@ -70,6 +70,16 @@ export interface Options {
    * @default 'vue3'
    */
   transformer?: SupportedTransformer
+  /**
+   * Generate TypeScript declaration for global components
+   *
+   * Accept boolean or a path related to project root
+   *
+   * @see https://github.com/vuejs/core/pull/3399
+   * @see https://github.com/johnsoncodehk/volar#using
+   * @default true
+   */
+  dts?: boolean | string
 }
 export type ResolveOptions = Omit<Options, 'extensions' | 'dirs'>  & {
   extensions: string[]

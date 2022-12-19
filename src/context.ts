@@ -45,11 +45,17 @@ export class Context {
     })
   }
   resolveOptions(rawOptions: Options, root):ResolveOptions{
-    const resolveOptions = Object.assign({}, defaultOptions, rawOptions) as ResolveOptions
+    const resolveOptions = Object.assign(Object.create(null), defaultOptions, rawOptions) as ResolveOptions
     resolveOptions.extensions = toArray(resolveOptions.extensions)
     resolveOptions.dirs = toArray(resolveOptions.dirs)
     resolveOptions.resolvedDirs = resolveOptions.dirs.map(u => slash(resolve(root, u)))
     resolveOptions.root = root
+    resolveOptions.dts = !rawOptions.dts ? false : resolve(
+      root,
+      typeof rawOptions.dts === 'string'
+        ? rawOptions.dts
+        : 'components.d.ts',
+    )
     return resolveOptions
   }
   resolveGlobs(dirs:string[]) {
@@ -101,7 +107,9 @@ export class Context {
     }
   }
   generateDeclarant() {
-
+    if (!this.options.dts)
+      return
+    //todo generate dts method
   }
   get componentNameMap() {
     return this._componentNamesMap
