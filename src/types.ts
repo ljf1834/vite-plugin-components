@@ -1,5 +1,16 @@
+import type { FilterPattern } from "vite"
+
 export type SupportedTransformer = 'vue3' | 'vue2'
 export interface Options {
+  /**
+   * RegExp or glob to match files to be transformed
+   */
+  include?: FilterPattern
+
+  /**
+   * RegExp or glob to match files to NOT be transformed
+   */
+  exclude?: FilterPattern
   /**
    * Relative paths to the directory to search for components.
    * @default 'src/components'
