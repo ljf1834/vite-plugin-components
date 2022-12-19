@@ -1,9 +1,9 @@
-import {getNameFromFilePath, parseId, pascalCase, slash, stringifyComponentImport, toArray, matchGlobs, transformVue2, transformVue3} from "./utils"
-import {resolve} from "node:path"
+import { getNameFromFilePath, parseId, pascalCase, slash, stringifyComponentImport, toArray, matchGlobs, transformVue2, transformVue3 } from "./utils"
+import { resolve } from "node:path"
 import fg from 'fast-glob'
 import MagicString from 'magic-string'
 import { ViteDevServer } from "vite"
-import {fileURLToPath, pathToFileURL, URL} from "node:url"
+import { fileURLToPath, pathToFileURL, URL } from "node:url"
 import type { Options, ResolveOptions, ResolveResult } from "./types"
 
 const defaultOptions:Options = {
@@ -44,7 +44,7 @@ export class Context {
       this.generateDeclarant()
     })
   }
-  resolveOptions(rawOptions: Options, root):ResolveOptions{
+  resolveOptions(rawOptions: Options, root):ResolveOptions {
     const resolveOptions = Object.assign(Object.create(null), defaultOptions, rawOptions) as ResolveOptions
     resolveOptions.extensions = toArray(resolveOptions.extensions)
     resolveOptions.dirs = toArray(resolveOptions.dirs)
