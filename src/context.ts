@@ -14,7 +14,7 @@ const defaultOptions:Options = {
   importPathTransform: v => v
 }
 
-export class Context {
+export class Context{
   root = process.cwd()
   alias: Record<string, string>
   options: ResolveOptions
@@ -30,15 +30,15 @@ export class Context {
     this.options = this.resolveOptions(this.rawOptions, this.root)
     this._globs = this.resolveGlobs(this.options.dirs)
   }
-  private server:ViteDevServer | undefined
+  private _server:ViteDevServer | undefined
   setServer(server: ViteDevServer) {
-    this.server = server
-    this.server.watcher.on('add', (filePath) => {
+    this._server = server
+    this._server.watcher.on('add', (filePath) => {
       if (!matchGlobs(filePath, this.options.dirs.map(path => fileURLToPath(new URL(path, pathToFileURL(this.root).toString() + '/').href)))) return
       this.searchComponents()
       this.generateDeclarant()
     })
-    this.server.watcher.on('unlink', (filePath) => {
+    this._server.watcher.on('unlink', (filePath) => {
       if (!matchGlobs(filePath, this.options.dirs.map(path => fileURLToPath(new URL(path, pathToFileURL(this.root).toString() + '/').href)))) return
       this.searchComponents()
       this.generateDeclarant()

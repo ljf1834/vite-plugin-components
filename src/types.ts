@@ -1,4 +1,4 @@
-import type { FilterPattern } from "vite"
+import type { FilterPattern, ViteDevServer } from "vite"
 
 export type SupportedTransformer = 'vue3' | 'vue2'
 export interface Options {
@@ -95,3 +95,21 @@ export type ResolveResult = {
 }
 export type Nullable<T> = T | null | undefined
 export type Arrayable<T> = T | Array<T>
+export interface interfaceContext {
+  root: string,
+  options: ResolveOptions,
+  alias: Record<string, string>,
+  _server: ViteDevServer | undefined,
+  _globs: string[],
+  _componentPaths: Set<string>,
+  _componentNamesMap: Record<string, string>,
+  setRoot(root: string): void,
+  setServer(server: ViteDevServer): void,
+  findComponent(name: string): void,
+  searchComponents(): void,
+  resolveOptions(rawOptions: Options, root: string): ResolveOptions,
+  resolveGlobs(dirs: string[]): string[],
+  transform(code: string, id: string): { code: string, map: any },
+  get componentNameMap(): Record<string, string>,
+  get globs(): string[],
+}
